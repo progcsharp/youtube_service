@@ -42,7 +42,7 @@ def get_database_url():
     # ИСПОЛЬЗУЕМ СИНХРОННЫЙ ДРАЙВЕР для Alembic
     url = f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
     print(f"Database URL: {url}")
-    return "postgresql+psycopg2://postgres:147896325@localhost:5432/youtube_service"
+    return url
 
 
 def run_migrations_offline() -> None:
