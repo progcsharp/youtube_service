@@ -14,7 +14,7 @@ from db.engine import get_db
 from db.handler.create import create_channel
 from db.handler.get import check_youtube_channel
 
-router = APIRouter(prefix="/auth", tags=["answers"])
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.get("/login/<user_id>")

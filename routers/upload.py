@@ -11,7 +11,7 @@ from db.engine import get_db
 from db.handler.get import get_credentials_by_channel_id
 from shemas.upload import AccountsRequest
 
-router = APIRouter(prefix="/upload", tags=["answers"])
+router = APIRouter(prefix="/upload", tags=["upload"])
 
 
 @router.post("/videos")

@@ -11,7 +11,7 @@ from config import redis, REDIS_CREDENTIALS_TTL
 from db.engine import get_db
 from db.handler.get import get_credentials_by_channel_id, get_latest_stats
 
-router = APIRouter(prefix="/stats", tags=["answers"])
+router = APIRouter(prefix="/stats", tags=["stats"])
 
 
 @router.get("/<channel_id>/<video_id>")
