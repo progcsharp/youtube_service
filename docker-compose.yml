@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: fastapi_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - app-network
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: fastapi_redis
+    environment:
+      - REDIS_PORT=${REDIS_PORT}
+    networks:
+      - app-network
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  fastapi-app:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
+      REDIS_CREDENTIALS_TTL: ${REDIS_CREDENTIALS_TTL}
+      CLIENT_SECRETS_FILE: ${CLIENT_SECRETS_FILE}
+      SCOPES: ${SCOPES}
+      REDIRECT_URI: ${REDIRECT_URI}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+    volumes:
+      - ./client_secret.json:/app/client_secret.json
+      - ./logs:/app/logs
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
