@@ -36,7 +36,7 @@ def get_database_url():
     db_name = os.getenv("POSTGRES_DB", "fastapi_tes")
     db_user = os.getenv("POSTGRES_USER", "postgres")
     db_password = os.getenv("POSTGRES_PASSWORD", "147896325")
-    db_host = os.getenv("POSTGRES_HOST", "localhost")
+    db_host = os.getenv("POSTGRES_HOST", "postgres")
     db_port = os.getenv("POSTGRES_PORT", "5432")
 
     # ИСПОЛЬЗУЕМ СИНХРОННЫЙ ДРАЙВЕР для Alembic
