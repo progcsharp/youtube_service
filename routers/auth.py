@@ -74,13 +74,13 @@ async def auth_callback(code: str, state: str, db: AsyncSession = Depends(get_db
     published_at = datetime.fromisoformat(published_at_str.replace('Z', '+00:00'))
 
     channel_data = {
-        "channel_id": str(uuid.uuid4()),
-        "account_id": str(uuid.uuid4()),  # state,
+        "channel_id": str(uuid.uuid4()), # acсount_id - уникальный id аккаунта платформы в нашей системе
+        "account_id": str(uuid.uuid4()),  # user_id - уникальный id пользователя в системе
         'title': response['items'][0]['snippet']['title'],
         'etag': response['etag'],
         'description': response['items'][0]['snippet']['description'],
         'custom_url': response['items'][0]['snippet']['customUrl'],
-        'youtube_channel_id': response['items'][0]['id'],
+        'youtube_channel_id': response['items'][0]['id'], # platform_user_id - уникальный ключ самой платформы ютуба
         'published_at': published_at,  # Теперь это datetime объект, а не строка
         'thumbnail_url': response['items'][0]['snippet']['thumbnails']['high']['url'],
         'subscriber_count': int(response['items'][0]['statistics']['subscriberCount']),
