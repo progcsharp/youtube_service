@@ -10,6 +10,7 @@ from db.models import Channel, Post
 
 async def check_youtube_channel(youtube_id: str, session: AsyncSession) -> Channel:
     query = select(Channel).where(Channel.youtube_channel_id == youtube_id)
+    print(query)
     result = await session.execute(query)
     youtube = result.scalar_one_or_none()
 

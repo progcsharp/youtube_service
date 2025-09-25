@@ -72,10 +72,10 @@ async def auth_callback(code: str, state: str, db: AsyncSession = Depends(get_db
     published_at_str = response['items'][0]['snippet']['publishedAt']
     # Убираем 'Z' в конце и добавляем временную зону +00:00
     published_at = datetime.fromisoformat(published_at_str.replace('Z', '+00:00'))
-
+    # print(state)
     channel_data = {
         "channel_id": str(uuid.uuid4()), # acсount_id - уникальный id аккаунта платформы в нашей системе
-        "account_id": str(uuid.uuid4()),  # user_id - уникальный id пользователя в системе
+        "account_id": state,  # user_id - уникальный id пользователя в системе
         'title': response['items'][0]['snippet']['title'],
         'etag': response['etag'],
         'description': response['items'][0]['snippet']['description'],
@@ -89,7 +89,7 @@ async def auth_callback(code: str, state: str, db: AsyncSession = Depends(get_db
         'privacy_status': response['items'][0]['status']['privacyStatus'],
         'credentials': credentials.to_json()
     }
-    print(channel_data)
+    # print(channel_data)
 
     async with db() as session:
         channel = await check_youtube_channel(youtube_id, session)
