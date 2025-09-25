@@ -117,7 +117,7 @@ async def message_processing(data):
     video_data = data["video_data"]
 
     redis = Redis(
-            host="localhost",
+            host="redis",
             port=6379,
             db=0,
             decode_responses=True  # Автоматически декодировать строки
