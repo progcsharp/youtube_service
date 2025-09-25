@@ -6,7 +6,7 @@ from cunsumer_func.remove_video import delete_file
 
 async def main():
     redis_broker = RedisConsumer(
-        host = "localhost", port = 6379, db = 0, channel = "remove_video"
+        host = "redis", port = 6379, db = 0, channel = "remove_video"
     )
 
     try:

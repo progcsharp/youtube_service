@@ -6,7 +6,7 @@ from cunsumer_func.download_video import download_file
 
 async def main():
     redis_broker = RedisConsumer(
-        host = "localhost", port = 6379, db = 0, channel = "download_video"
+        host = "redis", port = 6379, db = 0, channel = "download_video"
     )
 
     try:

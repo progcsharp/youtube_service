@@ -5,7 +5,7 @@ from consumer.consumer_class.redis_consumer import RedisConsumer
 
 async def consumer(processing_func: Callable, channel: str):
     redis_broker = RedisConsumer(
-        host = "localhost", port = 6379, db = 0, channel = channel
+        host = "redis", port = 6379, db = 0, channel = channel
     )
 
     try:

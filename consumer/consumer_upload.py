@@ -6,7 +6,7 @@ from cunsumer_func.upload_video import message_processing
 
 async def main():
     redis_broker = RedisConsumer(
-        host = "localhost", port = 6379, db = 0, channel = "upload_video"
+        host = "redis", port = 6379, db = 0, channel = "upload_video"
     )
 
     try:

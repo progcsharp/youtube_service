@@ -6,7 +6,7 @@ from cunsumer_func.save_video import save_video_post
 
 async def main():
     redis_broker = RedisConsumer(
-        host = "localhost", port = 6379, db = 0, channel = "save_video"
+        host = "redis", port = 6379, db = 0, channel = "save_video"
     )
 
     try:

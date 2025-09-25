@@ -69,7 +69,7 @@ async def upload_video(video_data: Dict[str, Any], credentials) -> Optional[Dict
 
         logger.info(f"Video uploaded successfully: {response['id']}")
 
-        redis_broker = StrictRedis(host="localhost", port=6379, db=0, decode_responses=True)
+        redis_broker = StrictRedis(host="redis", port=6379, db=0, decode_responses=True)
         redis_broker.publish("remove_video", json.dumps({"file_path": video_data["file_path"]}))
 
         snippet = response['snippet']

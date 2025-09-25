@@ -12,7 +12,7 @@ async def download_file(data):
     data = json.loads(data)
     download_dir = "videos"
 
-    redis_broker = StrictRedis(host="localhost", port=6379, db=0, decode_responses=True)
+    redis_broker = StrictRedis(host="redis", port=6379, db=0, decode_responses=True)
 
     for download_data in data:
         list_url = download_data['urls']
