@@ -79,4 +79,20 @@ async def get_channel_by_channel_id(channel_id: UUID, session: AsyncSession):
     return channel
 
 
+async def get_post_by_channel_id(channel_id: UUID, session: AsyncSession):
+    query = select(Post).where(Post.channel_id == channel_id)
+    result = await session.execute(query)
+    post = result.scalars().all()
+
+    return post
+
+
+async def get_post_by_post_id(post_id: UUID, session: AsyncSession):
+    query = select(Post).where(Post.post_id == post_id)
+    result = await session.execute(query)
+    post = result.scalar_one_or_none()
+
+    return post
+
+
 

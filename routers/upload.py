@@ -41,7 +41,7 @@ async def upload_files(post: AccountsRequest, db: AsyncSession = Depends(get_db)
             "user_id": str(item.account_id),
             "urls": list_video,
             "video_data": {
-                "post_id": str(uuid.uuid4()),
+                "post_id": str(item.post_id),
                 "channel_id": str(item.channel_id),
                 "title": item.caption,
                 "description": item.description,
