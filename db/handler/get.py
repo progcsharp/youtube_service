@@ -62,3 +62,21 @@ WHERE c.account_id = :account_id;
     result = await session.execute(query, {"account_id": str(account_id)})
     return result.mappings().all()
 
+
+async def get_channel_by_user_id(user_id: UUID, session: AsyncSession):
+    query = select(Channel).where(Channel.account_id == user_id)
+    result = await session.execute(query)
+    channel = result.scalars().all()
+
+    return channel
+
+
+async def get_channel_by_channel_id(channel_id: UUID, session: AsyncSession):
+    query = select(Channel).where(Channel.channel_id == channel_id)
+    result = await session.execute(query)
+    channel = result.scalar_one_or_none()
+
+    return channel
+
+
+

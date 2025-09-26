@@ -1,11 +1,8 @@
-import json
 import uuid
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Request, Depends
-from google.oauth2.credentials import Credentials
+from fastapi import APIRouter, HTTPException, Depends
 from googleapiclient.discovery import build
-from google.auth.transport.requests import Request as google_request
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 
@@ -72,7 +69,6 @@ async def auth_callback(code: str, state: str, db: AsyncSession = Depends(get_db
     published_at_str = response['items'][0]['snippet']['publishedAt']
     # Убираем 'Z' в конце и добавляем временную зону +00:00
     published_at = datetime.fromisoformat(published_at_str.replace('Z', '+00:00'))
-    # print(state)
     channel_data = {
         "channel_id": str(uuid.uuid4()), # acсount_id - уникальный id аккаунта платформы в нашей системе
         "account_id": state,  # user_id - уникальный id пользователя в системе
@@ -89,7 +85,6 @@ async def auth_callback(code: str, state: str, db: AsyncSession = Depends(get_db
         'privacy_status': response['items'][0]['status']['privacyStatus'],
         'credentials': credentials.to_json()
     }
-    # print(channel_data)
 
     async with db() as session:
         channel = await check_youtube_channel(youtube_id, session)
@@ -103,32 +98,3 @@ async def auth_callback(code: str, state: str, db: AsyncSession = Depends(get_db
 
         return channel
 
-    # except Exception as e:
-    #     raise HTTPException(status_code=500, detail=f"Callback error: {str(e)}")
-
-
-# @router.get("/status")
-# async def auth_status(request: Request):
-#     """Проверяет статус аутентификации"""
-#     user_id = request.cookies.get("user_id")
-#     print(user_id)
-#     if user_id:
-#         credentials_json = redis.get(f"credentials:{user_id}")
-#         if credentials_json:
-#             creds = Credentials.from_authorized_user_info(json.loads(credentials_json))
-#             if not creds.valid and creds.expired and creds.refresh_token:
-#                 print(f"Refreshing credentials for user_id: {user_id}")
-#                 creds.refresh(google_request())
-#                 redis.setex(f"credentials:{user_id}", REDIS_CREDENTIALS_TTL, creds.to_json())
-#                 print(f"Stored credentials for user_id: {user_id}")
-#
-#             if creds:
-#                 youtube = build('youtube', 'v3', credentials=creds)
-#
-#                 response = youtube.channels().list(
-#                     part="snippet,contentDetails",
-#                     mine=True
-#                 ).execute()
-#
-#                 return {"authenticated": True, "user_id": user_id, "channels": response}
-#     return {"authenticated": False}
