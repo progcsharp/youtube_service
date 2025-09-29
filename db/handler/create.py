@@ -32,7 +32,7 @@ async def create_channel(channel_data: Dict, session: AsyncSession) -> Channel:
         session.add(channel)
         await session.commit()
         await session.refresh(channel)
-        query = select(Channel).where(Channel.channel_id == channel.channel_id)
+        query = select(Channel).where(Channel.account_id == channel.account_id)
         result = await session.execute(query)
         new_channel = result.scalar_one_or_none()
         return new_channel

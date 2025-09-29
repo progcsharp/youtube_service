@@ -17,13 +17,13 @@ Base = declarative_base(metadata=meta)
 class Channel(Base):
     __tablename__ = 'channel'
 
-    channel_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    account_id = Column(UUID(as_uuid=True), nullable=False)
+    account_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), nullable=False)
     title = Column(String(255), nullable=False)
     etag = Column(String(100))
     description = Column(Text)
     custom_url = Column(String(100))
-    youtube_channel_id = Column(String(50), unique=True, nullable=False)
+    platform_user_id = Column(String(50), unique=True, nullable=False)
     published_at = Column(DateTime(timezone=True))
     country_code = Column(String(2))
     thumbnail_url = Column(String(500))
@@ -47,7 +47,7 @@ class Post(Base):
     __tablename__ = 'post'
 
     post_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    channel_id = Column(UUID(as_uuid=True), ForeignKey('channel.channel_id', ondelete='CASCADE'), nullable=False)
+    channel_id = Column(UUID(as_uuid=True), ForeignKey('channel.account_id', ondelete='CASCADE'), nullable=False)
     title = Column(String(500), nullable=False)
     description = Column(Text)
     youtube_video_id = Column(String(20), unique=True, nullable=False)

@@ -5,12 +5,12 @@ from typing import Optional
 
 
 class ChannelResponse(BaseModel):
-    youtube_channel_id: str
+    platform_user_id: str
     published_at: datetime
     last_synced_at: Optional[datetime] = None
-    account_id: UUID
+    user_id: UUID
     country_code: Optional[str] = None
-    channel_id: UUID
+    account_id: UUID
     thumbnail_url: str
     created_at: datetime
     updated_at: datetime

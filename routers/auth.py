@@ -70,13 +70,13 @@ async def auth_callback(code: str, state: str, db: AsyncSession = Depends(get_db
     # Убираем 'Z' в конце и добавляем временную зону +00:00
     published_at = datetime.fromisoformat(published_at_str.replace('Z', '+00:00'))
     channel_data = {
-        "channel_id": str(uuid.uuid4()), # acсount_id - уникальный id аккаунта платформы в нашей системе
-        "account_id": state,  # user_id - уникальный id пользователя в системе
+        "account_id": str(uuid.uuid4()), # acсount_id - уникальный id аккаунта платформы в нашей системе
+        "user_id": state,  # user_id - уникальный id пользователя в системе
         'title': response['items'][0]['snippet']['title'],
         'etag': response['etag'],
         'description': response['items'][0]['snippet']['description'],
         'custom_url': response['items'][0]['snippet']['customUrl'],
-        'youtube_channel_id': response['items'][0]['id'], # platform_user_id - уникальный ключ самой платформы ютуба
+        'platform_user_id': response['items'][0]['id'], # platform_user_id - уникальный ключ самой платформы ютуба
         'published_at': published_at,  # Теперь это datetime объект, а не строка
         'thumbnail_url': response['items'][0]['snippet']['thumbnails']['high']['url'],
         'subscriber_count': int(response['items'][0]['statistics']['subscriberCount']),
@@ -90,11 +90,11 @@ async def auth_callback(code: str, state: str, db: AsyncSession = Depends(get_db
         channel = await check_youtube_channel(youtube_id, session)
 
         if channel:
-            redis.setex(f"credentials:{channel.channel_id}", REDIS_CREDENTIALS_TTL, credentials.to_json())
+            redis.setex(f"credentials:{channel.account_id}", REDIS_CREDENTIALS_TTL, credentials.to_json())
             return channel
 
         channel = await create_channel(channel_data, session)
-        redis.setex(f"credentials:{channel.channel_id}", REDIS_CREDENTIALS_TTL, credentials.to_json())
+        redis.setex(f"credentials:{channel.account_id}", REDIS_CREDENTIALS_TTL, credentials.to_json())
 
         return channel
 

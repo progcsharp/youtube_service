@@ -9,7 +9,7 @@ from db.models import Channel, Post
 
 
 async def check_youtube_channel(youtube_id: str, session: AsyncSession) -> Channel:
-    query = select(Channel).where(Channel.youtube_channel_id == youtube_id)
+    query = select(Channel).where(Channel.platform_user_id == youtube_id)
     print(query)
     result = await session.execute(query)
     youtube = result.scalar_one_or_none()
@@ -35,7 +35,7 @@ async def get_post_youtube_id(session: AsyncSession):
     return list_youtube_video_id
 
 
-async def get_latest_stats(account_id: UUID, session: AsyncSession):
+async def get_latest_stats(user_id: UUID, session: AsyncSession):
     query = text("""
         SELECT 
     p.post_id,
@@ -56,23 +56,23 @@ LEFT JOIN LATERAL (
     ORDER BY capture_date DESC 
     LIMIT 1
 ) AS s ON true
-WHERE c.account_id = :account_id;
+WHERE c.user_id = :user_id;
     """)
 
-    result = await session.execute(query, {"account_id": str(account_id)})
+    result = await session.execute(query, {"user_id": str(user_id)})
     return result.mappings().all()
 
 
 async def get_channel_by_user_id(user_id: UUID, session: AsyncSession):
-    query = select(Channel).where(Channel.account_id == user_id)
+    query = select(Channel).where(Channel.user_id == user_id)
     result = await session.execute(query)
     channel = result.scalars().all()
 
     return channel
 
 
-async def get_channel_by_channel_id(channel_id: UUID, session: AsyncSession):
-    query = select(Channel).where(Channel.channel_id == channel_id)
+async def get_channel_by_channel_id(account_id: UUID, session: AsyncSession):
+    query = select(Channel).where(Channel.acсount_id == account_id)
     result = await session.execute(query)
     channel = result.scalar_one_or_none()
 
