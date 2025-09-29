@@ -9,6 +9,7 @@ from google.oauth2.credentials import Credentials
 
 from db.engine import get_db
 from db.handler.get import get_credentials_by_channel_id
+from db.handler.update import update_credentials_by_channel_id
 from shemas.upload import AccountsRequest
 
 router = APIRouter(prefix="/upload", tags=["upload"])
@@ -52,6 +53,9 @@ async def upload_files(post: AccountsRequest, db: AsyncSession = Depends(get_db)
             }
             })
         redis_broker.publish("download_video", json.dumps(message))
+
+        async with db() as session:
+            await update_credentials_by_channel_id(item.channel_id, credentials.to_json(), session)
 
     return message
 

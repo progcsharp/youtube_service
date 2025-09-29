@@ -10,7 +10,7 @@ router = APIRouter(prefix="/post", tags=["post"])
 
 
 @router.get("/all/<channel_id>")
-async def get_all_post_channel(channel_id: UUID,  db: AsyncSession = Depends(get_db)):
+async def get_all_post_channel(channel_id,  db: AsyncSession = Depends(get_db)):
     async with db() as session:
         post = await get_post_by_channel_id(channel_id, session)
     return post

@@ -8,6 +8,7 @@ from googleapiclient.discovery import build
 from db import make_session
 from db.handler.create import create_statistic_to_video
 from db.handler.get import get_post_youtube_id, get_credentials_by_channel_id
+from db.handler.update import update_credentials_by_channel_id
 
 
 async def collection_statistics():
@@ -42,6 +43,8 @@ async def collection_statistics():
         }
 
         await create_statistic_to_video(statistic_data, session)
+
+        await update_credentials_by_channel_id(channel_id, credentials.to_json(), session)
 
     await session.close()
 

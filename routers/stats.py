@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config import redis, REDIS_CREDENTIALS_TTL
 from db.engine import get_db
 from db.handler.get import get_credentials_by_channel_id, get_latest_stats
+from db.handler.update import update_credentials_by_channel_id
 
 router = APIRouter(prefix="/stats", tags=["stats"])
 
@@ -47,6 +48,10 @@ async def get_stats_video(channel_id, video_id, db: AsyncSession = Depends(get_d
         "favorite_count": int(response["items"][0]["statistics"]["favoriteCount"]),
         "comment_count": int(response["items"][0]["statistics"]["commentCount"])
     }
+
+    async with db() as session:
+        await update_credentials_by_channel_id(channel_id, credentials.to_json(), session)
+
     return statistic_object
 
 
