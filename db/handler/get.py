@@ -20,7 +20,7 @@ async def check_youtube_channel(youtube_id: str, session: AsyncSession) -> Chann
 
 
 async def get_credentials_by_channel_id(channel_id: UUID, session: AsyncSession):
-    query = select(Channel.credentials).where(Channel.channel_id == channel_id)
+    query = select(Channel.credentials).where(Channel.account_id == channel_id)
     result = await session.execute(query)
     channel = result.scalar_one_or_none()
     print(channel, channel_id)
