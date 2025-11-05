@@ -15,12 +15,12 @@ async def search(query: str):
     return {"message": "Hello, World!"}
 
 @router.get("/channel")
-async def channel(channel_id: str, db: AsyncSession = Depends(get_db)):
-    credentials_json = redis.get(f"credentials:{channel_id}")
+async def channel(channel_id: str, account_id: UUID, db: AsyncSession = Depends(get_db)):
+    credentials_json = redis.get(f"credentials:{account_id}")
 
     if credentials_json is None:
         async with db() as session:
-            credentials_json = await get_credentials_by_channel_id(channel_id, session)
+            credentials_json = await get_credentials_by_channel_id(account_id, session)
 
     credentials_dict = json.loads(credentials_json)
     credentials = Credentials.from_authorized_user_info(credentials_dict)
