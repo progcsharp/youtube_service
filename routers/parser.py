@@ -68,5 +68,24 @@ async def channel(channel_id: str, account_id: UUID, db: AsyncSession = Depends(
         if not next_page_token:
             break
 
+    for item in videos:
+        video_id = item["contentDetails"]["videoId"]
+        video_response = youtube.videos().list(
+            part="snippet,statistics,contentDetails,status,player,recordingDetails,liveStreamingDetails,topicDetails",
+            id=video_id
+        ).execute()
+        item["statistics"] = video_response["items"][0]["statistics"]
+        item["contentDetails"] = video_response["items"][0]["contentDetails"]
+        item["status"] = video_response["items"][0]["status"]
+
     # 3. Возвращаем только нужные поля
-    return videos
+    return [
+        {
+            "videoId": item["contentDetails"]["videoId"],
+            "stats": item["statistics"],
+            "contentDetails": item["contentDetails"],
+            "status": item["status"],
+            "snippet": item["snippet"]
+        }
+        for item in videos
+    ]
