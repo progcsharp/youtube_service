@@ -79,13 +79,5 @@ async def channel(channel_id: str, account_id: UUID, db: AsyncSession = Depends(
         item["status"] = video_response["items"][0]["status"]
 
     # 3. Возвращаем только нужные поля
-    return [
-        {
-            "videoId": item["contentDetails"]["videoId"],
-            "stats": item["statistics"],
-            "contentDetails": item["contentDetails"],
-            "status": item["status"],
-            "snippet": item["snippet"]
-        }
-        for item in videos
-    ]
+    return videos
+    
