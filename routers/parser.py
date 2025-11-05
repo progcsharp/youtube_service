@@ -28,12 +28,8 @@ async def channel(channel_id: str, account_id: UUID, db: AsyncSession = Depends(
     youtube = build('youtube', 'v3', credentials=credentials)
 
     response = youtube.channels().list(
-        part="id",
-        id=channel_id
+        part="snippet,contentDetails,statistics,status",
+        forHandle=channel_id
     ).execute()
 
-    token = credentials.valid
-    return {
-        "token": token,
-        "response": response
-    }
+    return response
