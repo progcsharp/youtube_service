@@ -67,15 +67,13 @@ async def channel(channel_id: str, account_id: UUID, db: AsyncSession = Depends(
     next_page_token = playlist_response.get("nextPageToken")
 
 
+    videos_list = []
     for item in videos:
         video_id = item["contentDetails"]["videoId"]
         video_response = youtube.videos().list(
             part="snippet,statistics,contentDetails,status,player,recordingDetails,liveStreamingDetails,topicDetails",
             id=video_id
         ).execute()
-        item["statistics"] = video_response["items"][0]["statistics"]
-        item["contentDetails"] = video_response["items"][0]["contentDetails"]
-        item["status"] = video_response["items"][0]["status"]
-
+        videos_list.append(item)
     # 3. Возвращаем только нужные поля
-    return videos
+    return videos_list, videos
