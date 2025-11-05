@@ -10,6 +10,7 @@ from routers.upload import router as upload_router
 from routers.stats import router as stats_router
 from routers.channel import router as channel_router
 from routers.post import router as post_router
+from routers.parser import router as parser_router
 
 app = FastAPI(debug=False)
 scheduler = AsyncIOScheduler()
@@ -41,5 +42,6 @@ app.include_router(router=upload_router)
 app.include_router(router=stats_router)
 app.include_router(router=channel_router)
 app.include_router(router=post_router)
+app.include_router(router=parser_router)
 
 
