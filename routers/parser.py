@@ -29,7 +29,7 @@ async def channel(channel_id: str, account_id: UUID, db: AsyncSession = Depends(
 
     response = youtube.channels().list(
         part="snippet,contentDetails,statistics,status",
-        forHandle=channel_id
+        id=channel_id
     ).execute()
 
     return response
