@@ -16,6 +16,23 @@ async def search(query: str):
 
 @router.get("/channel")
 async def channel(channel_id: str, account_id: UUID, db: AsyncSession = Depends(get_db)):
+    # credentials_json = redis.get(f"credentials:{account_id}")
+
+    # if credentials_json is None:
+    #     async with db() as session:
+    #         credentials_json = await get_credentials_by_channel_id(account_id, session)
+
+    # credentials_dict = json.loads(credentials_json)
+    # credentials = Credentials.from_authorized_user_info(credentials_dict)
+
+    # youtube = build('youtube', 'v3', credentials=credentials)
+
+    # response = youtube.channels().list(
+    #     part="snippet,contentDetails,statistics,status",
+    #     forHandle=channel_id
+    # ).execute()
+
+    # return response
     credentials_json = redis.get(f"credentials:{account_id}")
 
     if credentials_json is None:
@@ -24,12 +41,40 @@ async def channel(channel_id: str, account_id: UUID, db: AsyncSession = Depends(
 
     credentials_dict = json.loads(credentials_json)
     credentials = Credentials.from_authorized_user_info(credentials_dict)
-
     youtube = build('youtube', 'v3', credentials=credentials)
 
-    response = youtube.channels().list(
-        part="snippet,contentDetails,statistics,status",
-        forHandle=channel_id
+    # 1. Получаем uploads playlist ID
+    channel_response = youtube.channels().list(
+        part="contentDetails",
+        id=channel_id
     ).execute()
 
-    return response
+    uploads_playlist_id = channel_response["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
+
+    # 2. Получаем все видео
+    videos = []
+    next_page_token = None
+
+    while True:
+        playlist_response = youtube.playlistItems().list(
+            part="snippet,contentDetails",
+            playlistId=uploads_playlist_id,
+            maxResults=50,
+            pageToken=next_page_token
+        ).execute()
+
+        videos.extend(playlist_response["items"])
+        next_page_token = playlist_response.get("nextPageToken")
+        if not next_page_token:
+            break
+
+    # 3. Возвращаем только нужные поля
+    return [
+        {
+            "videoId": item["contentDetails"]["videoId"],
+            "title": item["snippet"]["title"],
+            "publishedAt": item["contentDetails"]["videoPublishedAt"],
+            "thumbnail": item["snippet"]["thumbnails"]["default"]["url"]
+        }
+        for item in videos
+    ]
