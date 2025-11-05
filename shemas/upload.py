@@ -12,20 +12,20 @@ class MediaItem(BaseModel):
 
 class PlatformSpecificData(BaseModel):
     location_id: Optional[str] = None
+    description: Optional[str] = None  # Опциональное описание
+    tags: Optional[List[str]] = None
     # Добавьте другие специфичные поля по необходимости
 
 
 class AccountPost(BaseModel):
+    user_id: UUID
     account_id: UUID
-    channel_id: UUID
     post_id: UUID
     post_type: str  # Можно использовать Enum если типы ограничены
     caption: str
     media: List[MediaItem]
     scheduled_time: Optional[datetime] = None
     platform_specific_data: PlatformSpecificData = PlatformSpecificData()
-    description: Optional[str] = None  # Опциональное описание
-    tags: Optional[List[str]] = None   # Опциональные теги
 
 
 

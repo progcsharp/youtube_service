@@ -83,3 +83,58 @@ class Statistic(Base):
     def __repr__(self):
         return f"<Statistic for post {self.post_id} at {self.capture_date}>"
 
+
+class YoutubeChannel(Base):
+    __tablename__ = 'youtube_channel'
+    youtube_channel_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    etag = Column(String(100))
+    title = Column(String(500), nullable=False)
+    description = Column(Text)
+    custom_url = Column(String(100))
+    platform_channel_id = Column(String(50), unique=True, nullable=False)
+    subscriber_count = Column(BigInteger, default=0)
+    video_count = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Отношения
+    channel = relationship("Channel", back_populates="youtube_channel")
+
+
+class Subscription(Base):
+    __tablename__ = 'subscription'
+    subscription_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), nullable=False)
+    youtube_channel_id = Column(UUID(as_uuid=True), ForeignKey('youtube_channel.youtube_channel_id', ondelete='CASCADE'), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Отношения
+    youtube_channel = relationship("YoutubeChannel", back_populates="subscriptions")
+
+    def __repr__(self):
+        return f"<Subscription {self.user_id} -> {self.youtube_channel_id}>"
+
+
+class Video(Base):
+    __tablename__ = 'video'
+
+    video_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title = Column(String(500), nullable=False)
+    description = Column(Text)
+    youtube_video_id = Column(String(20), unique=True, nullable=False)
+    tags = Column(ARRAY(String(500)))
+    count_views = Column(BigInteger, default=0)
+    count_likes = Column(Integer, default=0)
+    count_favorites = Column(Integer, default=0)
+    count_comments = Column(Integer, default=0)
+    youtube_channel_id = Column(UUID(as_uuid=True), ForeignKey('youtube_channel.youtube_channel_id', ondelete='CASCADE'), nullable=False)
+
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Отношения
+    youtube_channel = relationship("YoutubeChannel", back_populates="videos")
+
+    def __repr__(self):
+        return f"<Video {self.title} ({self.youtube_video_id})>"
