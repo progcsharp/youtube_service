@@ -107,12 +107,12 @@ async def create_subscription(subscription_data: Dict, session: AsyncSession):
     if subscription:
         return False
     subscription = Subscription(**subscription_data)
-    try:
-        session.add(subscription)
-        await session.commit()
-        await session.refresh(subscription)
-        return True
-    except SQLAlchemyError as e:
-        await session.rollback()
-        raise HTTPException(status_code=500, detail=f"Error creating subscription")
+    # try:
+    session.add(subscription)
+    await session.commit()
+    await session.refresh(subscription)
+    return True
+    # except SQLAlchemyError as e:
+    #     await session.rollback()
+    #     raise HTTPException(status_code=500, detail=f"Error creating subscription")
 
