@@ -108,7 +108,7 @@ async def get_youtube_channel_by_channel_id(channel_id: UUID, limit: int, sessio
         result = await session.execute(videos_query)
         videos = result.scalars().all()
         youtube_channel.videos = videos
-    return youtube_channel
+    return {"youtube_channel": youtube_channel, "videos": videos}
 
 
 async def get_channels_by_user_id(user_id: UUID, limit: int, session: AsyncSession):
