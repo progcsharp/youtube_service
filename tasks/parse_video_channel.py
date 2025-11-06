@@ -5,7 +5,9 @@ from googleapiclient.discovery import build
 from sqlalchemy.ext.asyncio import AsyncSession
 from config import redis
 from db.handler.get import get_credentials_by_channel_id
+from db.handler.create import create_video
 from uuid import UUID
+import uuid
 
 
 async def parse_video_channel(platform_channel_id: str, channel_id: str, account_id: UUID, session: AsyncSession):
@@ -48,7 +50,7 @@ async def parse_video_channel(platform_channel_id: str, channel_id: str, account
         item["player"] = video_response["items"][0]["player"]
         
         video = {
-            "video_id": uuid.uuid4(),
+            "video_id": str(uuid.uuid4()),
             "title": item["snippet"]["title"],
             "description": item["snippet"]["description"],
             "youtube_video_id": video_id,
@@ -58,4 +60,6 @@ async def parse_video_channel(platform_channel_id: str, channel_id: str, account
             "count_comments": item["statistics"]["commentCount"],
             "youtube_channel_id": channel_id,
         }
+
+        await create_video(video, session)
 

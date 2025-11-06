@@ -7,10 +7,12 @@ from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from config import redis
 from db.handler.get import get_credentials_by_channel_id
-from db.handler.create import create_youtube_channel
+from db.handler.create import create_youtube_channel, create_subscription
 from tasks.parse_video_channel import parse_video_channel
 from datetime import datetime
 import uuid
+from shemas.parser import ChannelCreate
+import asyncio
 
 router = APIRouter(prefix="/parser", tags=["parser"])
 
@@ -29,21 +31,21 @@ async def channel_get(channel_id: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/channel")
-async def channel_post(channel_handle: str, account_id: UUID, db: AsyncSession = Depends(get_db)):
+async def channel_post(channel_data_request: ChannelCreate, db: AsyncSession = Depends(get_db)):
     
     async with db() as session:
-        credentials_json = redis.get(f"credentials:{str(account_id)}")
+        credentials_json = redis.get(f"credentials:{str(channel_data_request.account_id)}")
         if credentials_json is None:
-            credentials_json = await get_credentials_by_channel_id(str(account_id), session)
+            credentials_json = await get_credentials_by_channel_id(str(channel_data_request.account_id), session)
         credentials = Credentials.from_authorized_user_info(json.loads(credentials_json))
         youtube = build('youtube', 'v3', credentials=credentials)
         response = youtube.channels().list(
             part="snippet,contentDetails,statistics,status",
-            forHandle=channel_handle
+            forHandle=channel_data_request.channel_handle
         ).execute()
 
         channel_data = {
-            "youtube_channel_id": uuid.uuid4(),
+            "youtube_channel_id": str(uuid.uuid4()),
             "etag": response["etag"],
             "title": response["items"][0]["snippet"]["title"],
             "description": response["items"][0]["snippet"]["description"],
@@ -54,7 +56,18 @@ async def channel_post(channel_handle: str, account_id: UUID, db: AsyncSession =
             "created_at": datetime.now(),
             "updated_at": datetime.now(),
         }
-        # await create_youtube_channel(channel_data, session)
+        created, youtube_channel = await create_youtube_channel(channel_data, session)
+        if created:
+            asyncio.create_task(parse_video_channel(response["items"][0]["id"], str(youtube_channel.youtube_channel_id), channel_data_request.account_id, session))
+
+
+        subscription_data = {
+            "user_id": channel_data_request.user_id,
+            "youtube_channel_id": youtube_channel.youtube_channel_id,
+            "created_at": datetime.now(),
+            "updated_at": datetime.now(),
+        }
+        await create_subscription(subscription_data, session)
         return channel_data
 
 

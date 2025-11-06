@@ -71,15 +71,16 @@ async def create_youtube_channel(youtube_channel_data: Dict, session: AsyncSessi
     result = await session.execute(query)
     youtube_channel = result.scalar_one_or_none()
     if youtube_channel:
-        return youtube_channel
+        return False, youtube_channel
     youtube_channel = YoutubeChannel(**youtube_channel_data)
     try:
         session.add(youtube_channel)
         await session.commit()
         await session.refresh(youtube_channel)
-        return True
+        return True, youtube_channel
     except SQLAlchemyError as e:
         await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Error creating youtube channel")
 
 
 async def create_video(video_data: Dict, session: AsyncSession):
@@ -87,7 +88,7 @@ async def create_video(video_data: Dict, session: AsyncSession):
     result = await session.execute(query)
     video = result.scalar_one_or_none()
     if video:
-        return video
+        return False
     video = Video(**video_data)
     try:
         session.add(video)
@@ -96,6 +97,7 @@ async def create_video(video_data: Dict, session: AsyncSession):
         return True
     except SQLAlchemyError as e:
         await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Error creating video")
 
 
 async def create_subscription(subscription_data: Dict, session: AsyncSession):
@@ -103,7 +105,7 @@ async def create_subscription(subscription_data: Dict, session: AsyncSession):
     result = await session.execute(query)
     subscription = result.scalar_one_or_none()
     if subscription:
-        return subscription
+        return False
     subscription = Subscription(**subscription_data)
     try:
         session.add(subscription)
@@ -112,5 +114,5 @@ async def create_subscription(subscription_data: Dict, session: AsyncSession):
         return True
     except SQLAlchemyError as e:
         await session.rollback()
-
+        raise HTTPException(status_code=500, detail=f"Error creating subscription")
 
