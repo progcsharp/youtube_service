@@ -50,6 +50,17 @@ async def search_youtube(
             "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}"
         })
 
+    for result in results:
+        video_response = youtube.videos().list(
+            part="snippet,statistics,contentDetails,status,player,recordingDetails,liveStreamingDetails,topicDetails",
+            id=result["videoId"]
+        ).execute()
+        result["statistics"] = video_response["items"][0]["statistics"]
+        result["contentDetails"] = video_response["items"][0]["contentDetails"]
+        result["status"] = video_response["items"][0]["status"]
+        result["snippet"] = video_response["items"][0]["snippet"]
+        result["player"] = video_response["items"][0]["player"]
+
     return {"query": query, "count": len(results), "videos": results}
 
 @router.get("/channels/<user_id>")
