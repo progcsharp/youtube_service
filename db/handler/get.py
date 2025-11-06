@@ -97,17 +97,15 @@ async def get_post_by_post_id(post_id: UUID, session: AsyncSession):
 
 
 async def get_youtube_channel_by_channel_id(channel_id: UUID, limit: int, session: AsyncSession):
-    query = select(YoutubeChannel).where(YoutubeChannel.youtube_channel_id == channel_id)
+    query = select(YoutubeChannel).where(YoutubeChannel.youtube_channel_id == channel_id).options(selectinload(YoutubeChannel.videos))
     result = await session.execute(query)
     youtube_channel = result.scalar_one_or_none()
 
     if not youtube_channel:
         raise HTTPException(status_code=404, detail="Youtube channel not found")
     if limit:
-        videos_query = select(Video).where(Video.youtube_channel_id == channel_id).order_by(Video.created_at.desc()).limit(limit)
-        result = await session.execute(videos_query)
-        videos = result.scalars().all()
-    return {"youtube_channel": youtube_channel, "videos": videos}
+        youtube_channel.videos = youtube_channel.videos[:limit]
+    return youtube_channel
 
 
 async def get_channels_by_user_id(user_id: UUID, limit: int, session: AsyncSession):
@@ -120,7 +118,7 @@ async def get_channels_by_user_id(user_id: UUID, limit: int, session: AsyncSessi
 
     channels = []
     for subscription in subscription:
-        channel = await get_youtube_channel_by_channel_id(subscription.youtube_channel_id, limit, session)
+        channel = await get_youtube_channel_by_channel_id(subscription.youtube_channel_id, session)
         channels.append(channel)
 
     return channels
