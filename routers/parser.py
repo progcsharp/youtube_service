@@ -28,9 +28,9 @@ async def channel(user_id: UUID, limit: int = None, db: AsyncSession = Depends(g
 
 
 @router.get("/channel/<channel_id>")
-async def channel_get(channel_id: str, db: AsyncSession = Depends(get_db)):
+async def channel_get(channel_id: str, limit: int = None, db: AsyncSession = Depends(get_db)):
     async with db() as session:
-        youtube_channel = await get_youtube_channel_by_channel_id(channel_id, session)
+        youtube_channel = await get_youtube_channel_by_channel_id(channel_id, limit, session)
         return youtube_channel
 
 
