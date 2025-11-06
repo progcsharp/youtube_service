@@ -57,17 +57,19 @@ async def channel_post(channel_data_request: ChannelCreate, db: AsyncSession = D
             "updated_at": datetime.now(),
         }
         created, youtube_channel = await create_youtube_channel(channel_data, session)
-        if created:
-            asyncio.create_task(parse_video_channel(response["items"][0]["id"], str(youtube_channel.youtube_channel_id), channel_data_request.account_id, session))
-
+        
 
         subscription_data = {
-            "user_id": channel_data_request.user_id,
-            "youtube_channel_id": youtube_channel.youtube_channel_id,
+            "user_id": str(channel_data_request.user_id),  # mock user_id
+            "youtube_channel_id": str(youtube_channel.youtube_channel_id),  # mock youtube_channel_id
             "created_at": datetime.now(),
             "updated_at": datetime.now(),
         }
-        await create_subscription(subscription_data, session)
+
+        if created:
+            await create_subscription(subscription_data, session)
+            await parse_video_channel(response["items"][0]["id"], str(youtube_channel.youtube_channel_id), channel_data_request.account_id, session)
+
         return youtube_channel
 
 
