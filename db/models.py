@@ -94,7 +94,6 @@ class YoutubeChannel(Base):
     platform_channel_id = Column(String(50), unique=True, nullable=False)
     subscriber_count = Column(BigInteger, default=0)
     video_count = Column(Integer, default=0)
-    published_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -127,6 +126,7 @@ class Video(Base):
     count_likes = Column(Integer, default=0)
     count_favorites = Column(Integer, default=0)
     count_comments = Column(Integer, default=0)
+    published_at = Column(DateTime(timezone=True))
     youtube_channel_id = Column(UUID(as_uuid=True), ForeignKey('youtube_channel.youtube_channel_id', ondelete='CASCADE'), nullable=False)
 
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
