@@ -1,5 +1,5 @@
 import json
-import re
+import isodate
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -50,19 +50,13 @@ async def parse_video_channel(platform_channel_id: str, channel_id: str, account
         item["snippet"] = video_response["items"][0]["snippet"]
         item["player"] = video_response["items"][0]["player"]
         duration = video_response["items"][0]["contentDetails"]["duration"]
-        duration = re.sub(r'PT', '', duration)
-        duration = re.sub(r'H', 'h', duration)
-        duration = re.sub(r'M', 'm', duration)
-        duration = re.sub(r'S', 's', duration)
-        duration = datetime.strptime(duration, '%H:%M:%S')
+        duration_timedelta = isodate.parse_duration(duration)
+        duration_seconds = int(duration_timedelta.total_seconds())
 
-        if duration > 60:
-            type = "long"
-        else:
-            type = "short"
+        video_type = "long" if duration_seconds > 60 else "short"
         
         video = {
-            "type": type,   
+            "type": video_type,   
             "video_id": str(uuid.uuid4()),
             "title": item["snippet"]["title"],
             "description": item["snippet"]["description"],
