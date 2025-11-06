@@ -54,10 +54,10 @@ async def parse_video_channel(platform_channel_id: str, channel_id: str, account
             "title": item["snippet"]["title"],
             "description": item["snippet"]["description"],
             "youtube_video_id": video_id,
-            "count_views": int(item["statistics"]["viewCount"]),
-            "count_likes": int(item["statistics"]["likeCount"]),
-            "count_favorites": int(item["statistics"]["favoriteCount"]),
-            "count_comments": int(item["statistics"]["commentCount"]),
+            "count_views": int(item.get("statistics", {}).get("viewCount", 0)),
+            "count_likes": int(item.get("statistics", {}).get("likeCount", 0)),
+            "count_favorites": int(item.get("statistics", {}).get("favoriteCount", 0)),
+            "count_comments": int(item.get("statistics", {}).get("commentCount", 0)),
             "youtube_channel_id": channel_id,
         }
 
