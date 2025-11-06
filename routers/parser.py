@@ -66,8 +66,7 @@ async def search_youtube(
             "favoriteCount": video_response["items"][0]["statistics"]["favoriteCount"],
             "commentCount": video_response["items"][0]["statistics"]["commentCount"],
             "channelTitle": video_response["items"][0]["snippet"]["channelTitle"],
-            "channelId": video_response["items"][0]["snippet"]["channelId"],
-            "tags": video_response["items"][0]["snippet"]["tags"],
+            "channelId": video_response["items"][0]["snippet"]["channelId"]
         })
 
     return {"query": query, "count": len(results), "videos": videos}
