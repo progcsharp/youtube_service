@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 
 from db import make_session
-from db.models import Channel, Post, YoutubeChannel
+from db.models import Channel, Post, YoutubeChannel, Subscription
 from fastapi import HTTPException
 
 
@@ -105,3 +105,18 @@ async def get_youtube_channel_by_channel_id(channel_id: UUID, session: AsyncSess
         return youtube_channel      
     raise HTTPException(status_code=404, detail="Youtube channel not found")
 
+
+async def get_channels_by_user_id(user_id: UUID, session: AsyncSession):
+    query = select(Subscription).where(Subscription.user_id == user_id)
+    result = await session.execute(query)
+    subscription = result.scalars().all()
+
+    if not subscription:
+        raise HTTPException(status_code=404, detail="Subscriptions not found")
+
+    channels = []
+    for subscription in subscription:
+        channel = await get_youtube_channel_by_channel_id(subscription.youtube_channel_id, session)
+        channels.append(channel)
+
+    return channels
