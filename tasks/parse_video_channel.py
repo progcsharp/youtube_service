@@ -59,6 +59,7 @@ async def parse_video_channel(platform_channel_id: str, channel_id: str, account
             "count_favorites": int(item.get("statistics", {}).get("favoriteCount", 0)),
             "count_comments": int(item.get("statistics", {}).get("commentCount", 0)),
             "youtube_channel_id": channel_id,
+            "published_at": item["snippet"]["publishedAt"],
         }
 
         await create_video(video, session)

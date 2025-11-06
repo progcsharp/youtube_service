@@ -94,6 +94,7 @@ class YoutubeChannel(Base):
     platform_channel_id = Column(String(50), unique=True, nullable=False)
     subscriber_count = Column(BigInteger, default=0)
     video_count = Column(Integer, default=0)
+    published_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 

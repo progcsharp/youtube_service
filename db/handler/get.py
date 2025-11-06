@@ -103,6 +103,13 @@ async def get_youtube_channel_by_channel_id(channel_id: UUID, limit: int, sessio
 
     if not youtube_channel:
         raise HTTPException(status_code=404, detail="Youtube channel not found")
+
+    youtube_channel.videos = sorted(
+        youtube_channel.videos,
+        key=lambda v: v.published_at,
+        reverse=True
+    )
+    
     if limit:
         youtube_channel.videos = youtube_channel.videos[:limit]
     return youtube_channel
