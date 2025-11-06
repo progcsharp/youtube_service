@@ -90,14 +90,14 @@ async def create_video(video_data: Dict, session: AsyncSession):
     if video:
         return False
     video = Video(**video_data)
-    try:
-        session.add(video)
-        await session.commit()
-        await session.refresh(video)
-        return True
-    except SQLAlchemyError as e:
-        await session.rollback()
-        raise HTTPException(status_code=500, detail=f"Error creating video")
+    # try:
+    session.add(video)
+    await session.commit()
+    await session.refresh(video)
+    return True
+    # except SQLAlchemyError as e:
+    #     await session.rollback()
+    #     raise HTTPException(status_code=500, detail=f"Error creating video")
 
 
 async def create_subscription(subscription_data: Dict, session: AsyncSession):
@@ -107,12 +107,12 @@ async def create_subscription(subscription_data: Dict, session: AsyncSession):
     if subscription:
         return False
     subscription = Subscription(**subscription_data)
-    # try:
-    session.add(subscription)
-    await session.commit()
-    await session.refresh(subscription)
-    return True
-    # except SQLAlchemyError as e:
-    #     await session.rollback()
-    #     raise HTTPException(status_code=500, detail=f"Error creating subscription")
+    try:
+        session.add(subscription)
+        await session.commit()
+        await session.refresh(subscription)
+        return True
+    except SQLAlchemyError as e:
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Error creating subscription")
 
