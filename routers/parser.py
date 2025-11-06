@@ -56,7 +56,19 @@ async def search_youtube(
             part="snippet,statistics,contentDetails,status,player,recordingDetails,liveStreamingDetails,topicDetails",
             id=result["videoId"]
         ).execute()
-        videos.append(video_response)
+        videos.append({
+            "videoId": video_response["items"][0]["id"],
+            "title": video_response["items"][0]["snippet"]["title"],
+            "description": video_response["items"][0]["snippet"]["description"],
+            "thumbnailUrl": video_response["items"][0]["snippet"]["thumbnails"]["high"]["url"],
+            "viewCount": video_response["items"][0]["statistics"]["viewCount"],
+            "likeCount": video_response["items"][0]["statistics"]["likeCount"],
+            "favoriteCount": video_response["items"][0]["statistics"]["favoriteCount"],
+            "commentCount": video_response["items"][0]["statistics"]["commentCount"],
+            "channelTitle": video_response["items"][0]["snippet"]["channelTitle"],
+            "channelId": video_response["items"][0]["snippet"]["channelId"],
+            "tags": video_response["items"][0]["snippet"]["tags"],
+        })
 
     return {"query": query, "count": len(results), "videos": videos}
 
