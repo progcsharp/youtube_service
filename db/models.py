@@ -97,9 +97,8 @@ class YoutubeChannel(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Отношения
-    channel = relationship("Channel", back_populates="youtube_channel")
-
+    videos = relationship("Video", back_populates="youtube_channel", cascade="all, delete-orphan")
+    subscriptions = relationship("Subscription", back_populates="youtube_channel", cascade="all, delete-orphan")
 
 class Subscription(Base):
     __tablename__ = 'subscription'
