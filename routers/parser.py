@@ -23,7 +23,7 @@ async def search(query: str):
 @router.get("/channels/<user_id>")
 async def channel(user_id: UUID, limit: int = None, db: AsyncSession = Depends(get_db)):
     async with db() as session:
-        channels = await get_channels_by_user_id(user_id, session)
+        channels = await get_channels_by_user_id(user_id, limit, session)
         return channels
 
 

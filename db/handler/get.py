@@ -96,8 +96,8 @@ async def get_post_by_post_id(post_id: UUID, session: AsyncSession):
     return post
 
 
-async def get_youtube_channel_by_channel_id(channel_id: UUID, session: AsyncSession):
-    query = select(YoutubeChannel).where(YoutubeChannel.youtube_channel_id == channel_id).options(selectinload(YoutubeChannel.videos))
+async def get_youtube_channel_by_channel_id(channel_id: UUID, limit: int = 10, session: AsyncSession = None):
+    query = select(YoutubeChannel).where(YoutubeChannel.youtube_channel_id == channel_id).options(selectinload(YoutubeChannel.videos)).limit(limit)
     result = await session.execute(query)
     youtube_channel = result.scalar_one_or_none()
 
