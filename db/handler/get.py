@@ -107,7 +107,6 @@ async def get_youtube_channel_by_channel_id(channel_id: UUID, limit: int, sessio
         videos_query = select(Video).where(Video.youtube_channel_id == channel_id).order_by(Video.created_at.desc()).limit(limit)
         result = await session.execute(videos_query)
         videos = result.scalars().all()
-        youtube_channel.videos = videos
     return {"youtube_channel": youtube_channel, "videos": videos}
 
 
