@@ -6,7 +6,7 @@ from db.engine import get_db
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from config import redis
-from db.handler.get import get_credentials_by_channel_id
+from db.handler.get import get_credentials_by_channel_id, get_youtube_channel_by_channel_id
 from db.handler.create import create_youtube_channel, create_subscription
 from tasks.parse_video_channel import parse_video_channel
 from datetime import datetime
@@ -27,7 +27,9 @@ async def channel(user_id: UUID, limit: int = None, db: AsyncSession = Depends(g
 
 @router.get("/channel/<channel_id>")
 async def channel_get(channel_id: str, db: AsyncSession = Depends(get_db)):
-    pass
+    async with db() as session:
+        youtube_channel = await get_youtube_channel_by_channel_id(channel_id, session)
+        return youtube_channel
 
 
 @router.post("/channel")

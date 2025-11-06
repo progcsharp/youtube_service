@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 
 from db import make_session
-from db.models import Channel, Post
+from db.models import Channel, Post, YoutubeChannel
+from fastapi import HTTPException
 
 
 async def check_youtube_channel(youtube_id: str, session: AsyncSession) -> Channel:
@@ -95,4 +96,12 @@ async def get_post_by_post_id(post_id: UUID, session: AsyncSession):
     return post
 
 
+async def get_youtube_channel_by_channel_id(channel_id: UUID, session: AsyncSession):
+    query = select(YoutubeChannel).where(YoutubeChannel.youtube_channel_id == channel_id).options(selectinload(YoutubeChannel.videos))
+    result = await session.execute(query)
+    youtube_channel = result.scalar_one_or_none()
+
+    if youtube_channel:
+        return youtube_channel      
+    raise HTTPException(status_code=404, detail="Youtube channel not found")
 
