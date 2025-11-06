@@ -118,7 +118,7 @@ async def get_channels_by_user_id(user_id: UUID, limit: int, session: AsyncSessi
 
     channels = []
     for subscription in subscription:
-        channel = await get_youtube_channel_by_channel_id(subscription.youtube_channel_id, session)
+        channel = await get_youtube_channel_by_channel_id(subscription.youtube_channel_id, limit, session)
         channels.append(channel)
 
     return channels
