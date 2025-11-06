@@ -127,6 +127,7 @@ class Video(Base):
     count_favorites = Column(Integer, default=0)
     count_comments = Column(Integer, default=0)
     published_at = Column(DateTime(timezone=True))
+    type = Column(String(20), default='long')
     youtube_channel_id = Column(UUID(as_uuid=True), ForeignKey('youtube_channel.youtube_channel_id', ondelete='CASCADE'), nullable=False)
 
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
