@@ -56,24 +56,9 @@ async def search_youtube(
             part="snippet,statistics,contentDetails,status,player,recordingDetails,liveStreamingDetails,topicDetails",
             id=result["videoId"]
         ).execute()
-        videos.append({
-            "videoId": video_response["items"][0]["id"],
-            "title": video_response["items"][0]["snippet"]["title"],
-            "description": video_response["items"][0]["snippet"]["description"],
-            "thumbnailUrl": video_response["items"][0]["snippet"]["thumbnails"]["high"]["url"],
-            "viewCount": video_response["items"][0]["statistics"]["viewCount"],
-            "likeCount": video_response["items"][0]["statistics"]["likeCount"],
-            "favoriteCount": video_response["items"][0]["statistics"]["favoriteCount"],
-            "commentCount": video_response["items"][0]["statistics"]["commentCount"],
-            "duration": video_response["items"][0]["contentDetails"]["duration"],
-            "publishedAt": video_response["items"][0]["snippet"]["publishedAt"],
-            "channelTitle": video_response["items"][0]["snippet"]["channelTitle"],
-            "channelId": video_response["items"][0]["snippet"]["channelId"],
-            "channelCustomUrl": video_response["items"][0]["snippet"]["channelCustomUrl"],
-            "url": f"https://www.youtube.com/watch?v={video_response['items'][0]['id']}"
-        })
+        videos.append(video_response)
 
-    return {"query": query, "count": len(results), "videos": results}
+    return {"query": query, "count": len(results), "videos": videos}
 
 @router.get("/channels/<user_id>")
 async def channel(user_id: UUID, limit: int = None, type: str = None, db: AsyncSession = Depends(get_db)):
