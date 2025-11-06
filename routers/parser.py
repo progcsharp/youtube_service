@@ -50,16 +50,28 @@ async def search_youtube(
             "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}"
         })
 
+    videos = []
     for result in results:
         video_response = youtube.videos().list(
             part="snippet,statistics,contentDetails,status,player,recordingDetails,liveStreamingDetails,topicDetails",
             id=result["videoId"]
         ).execute()
-        result["statistics"] = video_response["items"][0]["statistics"]
-        result["contentDetails"] = video_response["items"][0]["contentDetails"]
-        result["status"] = video_response["items"][0]["status"]
-        result["snippet"] = video_response["items"][0]["snippet"]
-        result["player"] = video_response["items"][0]["player"]
+        videos.append({
+            "videoId": video_response["items"][0]["id"],
+            "title": video_response["items"][0]["snippet"]["title"],
+            "description": video_response["items"][0]["snippet"]["description"],
+            "thumbnailUrl": video_response["items"][0]["snippet"]["thumbnails"]["high"]["url"],
+            "viewCount": video_response["items"][0]["statistics"]["viewCount"],
+            "likeCount": video_response["items"][0]["statistics"]["likeCount"],
+            "favoriteCount": video_response["items"][0]["statistics"]["favoriteCount"],
+            "commentCount": video_response["items"][0]["statistics"]["commentCount"],
+            "duration": video_response["items"][0]["contentDetails"]["duration"],
+            "publishedAt": video_response["items"][0]["snippet"]["publishedAt"],
+            "channelTitle": video_response["items"][0]["snippet"]["channelTitle"],
+            "channelId": video_response["items"][0]["snippet"]["channelId"],
+            "channelCustomUrl": video_response["items"][0]["snippet"]["channelCustomUrl"],
+            "url": f"https://www.youtube.com/watch?v={video_response['items'][0]['id']}"
+        })
 
     return {"query": query, "count": len(results), "videos": results}
 
