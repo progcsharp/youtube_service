@@ -51,8 +51,8 @@ async def channel_post(channel_data_request: ChannelCreate, db: AsyncSession = D
             "description": response["items"][0]["snippet"]["description"],
             "custom_url": response["items"][0]["snippet"]["customUrl"],
             "platform_channel_id": response["items"][0]["id"],
-            "subscriber_count": response["items"][0]["statistics"]["subscriberCount"],
-            "video_count": response["items"][0]["statistics"]["videoCount"],
+            "subscriber_count": int(response["items"][0]["statistics"]["subscriberCount"]),
+            "video_count": int(response["items"][0]["statistics"]["videoCount"]),
             "created_at": datetime.now(),
             "updated_at": datetime.now(),
         }
@@ -68,7 +68,7 @@ async def channel_post(channel_data_request: ChannelCreate, db: AsyncSession = D
             "updated_at": datetime.now(),
         }
         await create_subscription(subscription_data, session)
-        return channel_data
+        return youtube_channel
 
 
     # credentials_json = redis.get(f"credentials:{account_id}")
