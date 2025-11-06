@@ -62,11 +62,11 @@ async def search_youtube(
             "description": video_response["items"][0]["snippet"]["description"],
             "thumbnailUrl": video_response["items"][0]["snippet"]["thumbnails"]["high"]["url"],
             "viewCount": video_response["items"][0]["statistics"]["viewCount"],
-            "likeCount": video_response["items"][0]["statistics"]["likeCount"],
-            "favoriteCount": video_response["items"][0]["statistics"]["favoriteCount"],
-            "commentCount": video_response["items"][0]["statistics"]["commentCount"],
-            "channelTitle": video_response["items"][0]["snippet"]["channelTitle"],
-            "channelId": video_response["items"][0]["snippet"]["channelId"]
+            "likeCount": video_response.get("items", [{}])[0].get("statistics", {}).get("likeCount", 0),
+            "favoriteCount": video_response.get("items", [{}])[0].get("statistics", {}).get("favoriteCount", 0),
+            "commentCount": video_response.get("items", [{}])[0].get("statistics", {}).get("commentCount", 0),
+            "channelTitle": video_response.get("items", [{}])[0].get("snippet", {}).get("channelTitle", ""),
+            "channelId": video_response.get("items", [{}])[0].get("snippet", {}).get("channelId", "")
         })
 
     return {"query": query, "count": len(results), "videos": videos}
