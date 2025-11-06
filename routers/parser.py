@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 import json
@@ -17,8 +17,40 @@ import asyncio
 router = APIRouter(prefix="/parser", tags=["parser"])
 
 @router.get("/search")
-async def search(query: str):
-    return {"message": "Hello, World!"}
+async def search_youtube(
+    account_id: UUID,
+    query: str = Query(..., description="Поисковый запрос"),
+    max_results: int = Query(10, ge=1, le=50),
+    order: str = Query("relevance", description="Порядок сортировки: date, rating, relevance, title, viewCount"),
+    db: AsyncSession = Depends(get_db)):
+    
+    async with db() as session:
+        credentials_json = redis.get(f"credentials:{str(account_id)}")
+        if credentials_json is None:
+            credentials_json = await get_credentials_by_channel_id(str(account_id), session)
+        credentials = Credentials.from_authorized_user_info(json.loads(credentials_json))
+    youtube = build('youtube', 'v3', credentials=credentials)
+
+    request = youtube.search().list(
+        part="snippet",
+        q=query,
+        type="video",
+        order=order,
+        maxResults=max_results
+    )
+    response = request.execute()
+
+    results = []
+    for item in response.get("items", []):
+        results.append({
+            "videoId": item["id"]["videoId"],
+            "title": item["snippet"]["title"],
+            "publishedAt": item["snippet"]["publishedAt"],
+            "channelTitle": item["snippet"]["channelTitle"],
+            "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}"
+        })
+
+    return {"query": query, "count": len(results), "videos": results}
 
 @router.get("/channels/<user_id>")
 async def channel(user_id: UUID, limit: int = None, type: str = None, db: AsyncSession = Depends(get_db)):
