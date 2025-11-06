@@ -8,6 +8,7 @@ from db.handler.get import get_credentials_by_channel_id
 from db.handler.create import create_video
 from uuid import UUID
 import uuid
+from datetime import datetime
 
 
 async def parse_video_channel(platform_channel_id: str, channel_id: str, account_id: UUID, session: AsyncSession):
@@ -59,7 +60,7 @@ async def parse_video_channel(platform_channel_id: str, channel_id: str, account
             "count_favorites": int(item.get("statistics", {}).get("favoriteCount", 0)),
             "count_comments": int(item.get("statistics", {}).get("commentCount", 0)),
             "youtube_channel_id": channel_id,
-            "published_at": item["snippet"]["publishedAt"],
+            "published_at": datetime.fromisoformat(item["snippet"]["publishedAt"].replace("Z", "+00:00"))
         }
 
         await create_video(video, session)
