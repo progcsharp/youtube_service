@@ -1,0 +1,61 @@
+import json
+from re import A
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from sqlalchemy.ext.asyncio import AsyncSession
+from config import redis
+from db.handler.get import get_credentials_by_channel_id
+from uuid import UUID
+
+
+async def parse_video_channel(platform_channel_id: str, channel_id: str, account_id: UUID, session: AsyncSession):
+    credentials_json = redis.get(f"credentials:{str(account_id)}")
+    if credentials_json is None:
+        credentials_json = await get_credentials_by_channel_id(str(account_id), session)
+    credentials = Credentials.from_authorized_user_info(json.loads(credentials_json))
+    youtube = build('youtube', 'v3', credentials=credentials)
+    response = youtube.channels().list(
+        part="snippet,contentDetails,statistics,status",
+        id=platform_channel_id
+    ).execute()
+    
+
+    uploads_playlist_id = response["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
+    videos = []
+    next_page_token = None
+    while True:
+        playlist_response = youtube.playlistItems().list(
+            part="snippet,contentDetails",
+            playlistId=uploads_playlist_id,
+            maxResults=50,
+            pageToken=next_page_token
+        ).execute()
+        videos.extend(playlist_response["items"])
+        next_page_token = playlist_response.get("nextPageToken")
+        if not next_page_token:
+            break
+
+    for item in videos:
+        video_id = item["contentDetails"]["videoId"]
+        video_response = youtube.videos().list(
+            part="snippet,statistics,contentDetails,status,player,recordingDetails,liveStreamingDetails,topicDetails",
+            id=video_id
+        ).execute()
+        item["statistics"] = video_response["items"][0]["statistics"]
+        item["contentDetails"] = video_response["items"][0]["contentDetails"]
+        item["status"] = video_response["items"][0]["status"]
+        item["snippet"] = video_response["items"][0]["snippet"]
+        item["player"] = video_response["items"][0]["player"]
+        
+        video = {
+            "video_id": uuid.uuid4(),
+            "title": item["snippet"]["title"],
+            "description": item["snippet"]["description"],
+            "youtube_video_id": video_id,
+            "count_views": item["statistics"]["viewCount"],
+            "count_likes": item["statistics"]["likeCount"],
+            "count_favorites": item["statistics"]["favoriteCount"],
+            "count_comments": item["statistics"]["commentCount"],
+            "youtube_channel_id": channel_id,
+        }
+

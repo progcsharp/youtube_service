@@ -123,7 +123,6 @@ class Video(Base):
     title = Column(String(500), nullable=False)
     description = Column(Text)
     youtube_video_id = Column(String(20), unique=True, nullable=False)
-    tags = Column(ARRAY(String(500)))
     count_views = Column(BigInteger, default=0)
     count_likes = Column(Integer, default=0)
     count_favorites = Column(Integer, default=0)
