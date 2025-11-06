@@ -73,14 +73,14 @@ async def create_youtube_channel(youtube_channel_data: Dict, session: AsyncSessi
     if youtube_channel:
         return False, youtube_channel
     youtube_channel = YoutubeChannel(**youtube_channel_data)
-    try:
-        session.add(youtube_channel)
-        await session.commit()
-        await session.refresh(youtube_channel)
-        return True, youtube_channel
-    except SQLAlchemyError as e:
-        await session.rollback()
-        raise HTTPException(status_code=500, detail=f"Error creating youtube channel")
+    # try:
+    session.add(youtube_channel)
+    await session.commit()
+    await session.refresh(youtube_channel)
+    return True, youtube_channel
+    # except SQLAlchemyError as e:
+    #     await session.rollback()
+    #     raise HTTPException(status_code=500, detail=f"Error creating youtube channel")
 
 
 async def create_video(video_data: Dict, session: AsyncSession):
