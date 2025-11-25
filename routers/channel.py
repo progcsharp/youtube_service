@@ -18,8 +18,8 @@ async def get_all_channel(user_id: UUID, db: AsyncSession = Depends(get_db)):
     return channel
 
 
-@router.get("/{acсount_id}", response_model=ChannelResponse)
-async def get_all_channel(acсount_id: UUID, db: AsyncSession = Depends(get_db)):
+@router.get("/{account_id}", response_model=ChannelResponse)
+async def get_all_channel(account_id: UUID, db: AsyncSession = Depends(get_db)):
     async with db() as session:
-        channel = await get_channel_by_channel_id(acсount_id, session)
+        channel = await get_channel_by_channel_id(account_id, session)
     return channel
