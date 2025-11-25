@@ -73,7 +73,7 @@ async def get_channel_by_user_id(user_id: UUID, session: AsyncSession):
 
 
 async def get_channel_by_channel_id(account_id: UUID, session: AsyncSession):
-    query = select(Channel).where(Channel.acсount_id == account_id)
+    query = select(Channel).where(Channel.account_id == account_id)
     result = await session.execute(query)
     channel = result.scalar_one_or_none()
 
