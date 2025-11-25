@@ -14,7 +14,7 @@ from db.handler.get import check_youtube_channel
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.get("/login/<user_id>")
+@router.get("/login/{user_id}")
 async def login(user_id):
     try:
         flow = get_flow()

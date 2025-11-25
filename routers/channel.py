@@ -11,14 +11,14 @@ from shemas.channel import ChannelResponse
 router = APIRouter(prefix="/channel", tags=["channel"])
 
 
-@router.get("/all/<user_id>", response_model=List[ChannelResponse])
+@router.get("/all/{user_id}", response_model=List[ChannelResponse])
 async def get_all_channel(user_id: UUID, db: AsyncSession = Depends(get_db)):
     async with db() as session:
         channel = await get_channel_by_user_id(user_id, session)
     return channel
 
 
-@router.get("/<acсount_id>", response_model=ChannelResponse)
+@router.get("/{acсount_id}", response_model=ChannelResponse)
 async def get_all_channel(acсount_id: UUID, db: AsyncSession = Depends(get_db)):
     async with db() as session:
         channel = await get_channel_by_channel_id(acсount_id, session)

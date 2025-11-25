@@ -71,14 +71,14 @@ async def search_youtube(
 
     return {"query": query, "count": len(results), "videos": videos}
 
-@router.get("/channels/<user_id>")
+@router.get("/channels/{user_id}")
 async def channel(user_id: UUID, limit: int = None, type: str = None, db: AsyncSession = Depends(get_db)):
     async with db() as session:
         channels = await get_channels_by_user_id(user_id, limit, type, session)
         return channels
 
 
-@router.get("/channel/<channel_id>")
+@router.get("/channel/{channel_id}")
 async def channel_get(channel_id: str, limit: int = None, type: str = None, db: AsyncSession = Depends(get_db)):
     async with db() as session:
         youtube_channel = await get_youtube_channel_by_channel_id(channel_id, limit, type, session)

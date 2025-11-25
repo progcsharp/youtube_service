@@ -15,7 +15,7 @@ from db.handler.update import update_credentials_by_channel_id
 router = APIRouter(prefix="/stats", tags=["stats"])
 
 
-@router.get("/<channel_id>/<video_id>")
+@router.get("/{channel_id}/{video_id}")
 async def get_stats_video(channel_id, video_id, db: AsyncSession = Depends(get_db)):
     credentials_json = redis.get(f"credentials:{channel_id}")
 
@@ -55,7 +55,7 @@ async def get_stats_video(channel_id, video_id, db: AsyncSession = Depends(get_d
     return statistic_object
 
 
-@router.get("/<user_id>")
+@router.get("/{user_id}")
 async def get_stats(user_id, db: AsyncSession = Depends(get_db)):
     async with db() as session:
         stats = await get_latest_stats(user_id, session)
